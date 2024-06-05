@@ -1,0 +1,44 @@
+﻿@model SkoButik.Models.OrderDetailsViewModel
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h2>Order Details</h2>
+
+<p><strong>Order Number:</strong> @Model.Order.OrderId</p>
+<p><strong>Order Date:</strong> @Model.Order.OrderDate.ToShortDateString()</p>
+<p><strong>Total Price (SEK):</strong> @Model.TotalPrice</p>
+<p><strong>Ordered By:</strong> @Model.OrderedBy.FirstName @Model.OrderedBy.LastName</p>
+<p><strong>Customer Address:</strong> @Model.OrderedBy.Address, @Model.OrderedBy.ZipCode @Model.OrderedBy.City</p>
+<p><strong>Distance to Customer:</strong> @Model.Distance</p>
+
+<h3>Order Items</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Size</th>
+            <th>Quantity</th>            
+            <th>Price (SEK)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Order.OrderItems)
+        {
+            var inventory = item.Products.Inventories.FirstOrDefault(i => i.FkSizeId == item.FkSizeId);
+            <tr>
+                <td>@item.Products.ProductName</td>
+                <td>@inventory.Sizes.SizeName</td>
+                <td>@item.Amount</td>
+                <td>@(item.Amount * item.Price)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="OrderList" class="btn btn-primary">Back to List</a>
+    <a asp-controller="Dashboard" asp-action="Dashboard" class="btn btn-success">Admin Dashboard</a>
+</div>

@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            var firstName = user.FirstName;
+            var roles = await UserManager.GetRolesAsync(user);
+            <div class="dropdown">
+            <li class="nav-item dropdown" style="padding-right: 5px;">
+                <a class="btn btn-outline-success my-2 my-sm-0 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Manage">
+                    <i class="bi bi-person-badge"></i> Hello @firstName
+                        @if (roles.Contains("Admin"))
+                        {
+                        <span style="color: orange !important; font-size: 16px;">[Admin]</span>
+                        }
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li>
+                        <a class="dropdown-item" asp-controller="Orders" asp-action="Index">
+                            <i class="bi bi-list"></i> Orders
+                        </a>
+                    </li>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Accounts" asp-action="Users">
+                            <i class="bi bi-people"></i> Users
+                        </a>
+                    </li>
+                        }
+                </ul>
+            </li>
+            </div>
+            <li class="nav-item">
+                <form class="form-inline" style="padding-left: 5px;" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">
+                        <i class="bi bi-box-arrow-in-right"></i> Logout
+                    </button>
+                </form>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="btn btn-outline-success my-2 my-sm-0" asp-area="Identity" asp-page="/Account/Login">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            </li>
+        }
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="btn btn-outline-success my-2 my-sm-0" asp-area="Identity" asp-page="/Account/Register">
+                <i class="bi bi-person-plus"></i> Register
+            </a>
+        </li>
+        <li class="nav-item">
+            <span style="padding: 5px;"></span>
+        </li>
+        <li class="nav-item">
+            <a class="btn btn-outline-success my-2 my-sm-0" asp-area="Identity" asp-page="/Account/Login">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+        </li>
+    }
+</ul>

@@ -1,0 +1,36 @@
+﻿@model SkoButik.Models.ProductStatsViewModel
+
+@{
+    ViewData["Title"] = "Most Sold Product";
+}
+
+<h2 class="text-center my-4">Most Sold Product in Last 7 Days</h2>
+
+@if (Model != null && !string.IsNullOrEmpty(Model.ProductName))
+{
+    <div class="card bg-light text-center mb-4 p-4" style="font-size: 2em;">
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="Product Image" class="img-fluid mb-3" style="max-width: 200px; max-height: 200px;" />
+            }
+            else
+            {
+                <p>No image available for this product.</p>
+            }
+            <p><strong>Product Name:</strong> @Model.ProductName</p>
+            <p><strong>Total Quantity Sold:</strong> @Model.TotalQuantity</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card bg-light text-center mb-4 p-4" style="font-size: 2em;">
+        <div class="card-body">
+            <p>No sales data found in the last 7 days.</p>
+        </div>
+    </div>
+}
+<div class="text-center">
+    <a asp-controller="Dashboard" asp-action="Dashboard" class="btn btn-success btn-lg">Admin Dashboard</a>
+</div>

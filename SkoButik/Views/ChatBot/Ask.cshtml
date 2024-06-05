@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "AI Q&A";
+}
+
+<h2 style="text-align: center">@ViewData["Title"]</h2>
+
+
+@if (ViewBag.Answer != null)
+{
+    <div class="alert alert-info" role="alert">
+        @ViewBag.Answer
+    </div>
+
+}
+
+<form asp-action="Ask" method="post">
+    <div class="form-group">
+        <label for="question">Välj en fråga:</label>
+        <select class="form-control" id="question" name="question">
+            <option value="märken">Vilka märken erbjuder ni?</option>
+            <option value="färg">Finns det möjlighet att välja färg på skorna?</option>
+            <option value="storlekar">Kan jag beställa skor i alla storlekar?</option>
+            <option value="frakt">Erbjuder ni internationell frakt?</option>
+            <option value="leveranstid">Hur lång tid tar leveransen?</option>
+            <option value="kampanjer">Har ni några kampanjer?</option>
+            <option value="retur">Kan jag returnera skorna om de inte passar?</option>
+            <option value="lager">Hur kan jag kontrollera om en sko finns i lager?</option>
+            <option value="express">Erbjuder ni expressleverans?</option>
+            <option value="storlekshjälp">Kan jag få hjälp med att välja rätt skostorlek?</option>
+            <option value="garantier">Finns det några garantier på era skor?</option>
+            <option value="presentkort">Kan jag köpa presentkort för skor?</option>
+            <option value="reklamation">Hur gör jag om jag vill reklamera ett par skor?</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Fråga</button>
+</form>
+

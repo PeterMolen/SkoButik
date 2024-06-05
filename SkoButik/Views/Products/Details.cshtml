@@ -1,0 +1,139 @@
+﻿@model SkoButik.Models.Product
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <div class="card mb-2 mx-auto" style="max-width: 620px;">
+            <div class="row g-0">
+                <div class="col-md-12">
+                    <div class="card-header text-white bg-info">
+                        <p class="card-text">
+                            <h5 class="card-title">
+                                @Model.ProductName
+                            </h5>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <img src="@Model.ImageUrl" width="100%" alt="@Model.ProductName">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <p class="card-text">@Model.Description</p>
+                        <p class="card-text">
+                            <b>Brand: </b>
+                            @Model.Brand.BrandName
+                        </p>
+                        <p class="card-text" id="priceDisplay"><b>Price: </b>@Model.AdjustedPrice.ToString("c")</p>
+                        <p class="card-text">
+                            <b>Size: </b>
+                            @if (ViewBag.AvailableSizes != null && ViewBag.AvailableSizes.Count > 0)
+                            {
+                                <select id="sizeSelect" class="form-control">
+                                    <option value="">Select Size</option>
+                                    @foreach (var size in ViewBag.AvailableSizes)
+                                    {
+                                        <option value="@size.SizeId">@size.SizeName</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <span>No sizes available</span>
+                            }
+                        </p>
+                        <p class="card-text text-danger" id="sizeError" style="display:none;">Please select a size.</p>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card-footer">
+                        <p class="card-text">
+                            <a class="btn btn-outline-primary float-right" asp-action="Index">
+                                Back to List
+                            </a>
+                            <button class="btn btn-success text-white" id="addToCartBtn">
+                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#sizeSelect').change(function () {
+                var sizeId = $(this).val();
+                var productId = '@Model.ProductId';
+
+                if (sizeId) {
+                    $.ajax({
+                        url: '/Orders/CheckInventoryStatus',
+                        type: 'GET',
+                        data: { productId: productId, sizeId: sizeId },
+                        success: function (response) {
+                            if (response.status === "available") {
+                                $('#sizeError').hide();
+                                $('#addToCartBtn').prop('disabled', false);
+                            } else {
+                                $('#sizeError').text('Out of stock for selected size').show();
+                                $('#addToCartBtn').prop('disabled', true);
+                            }
+                        },
+                        error: function () {
+                            alert('Error checking inventory');
+                        }
+                    });
+                }
+            });
+
+            $('#addToCartBtn').click(function () {
+                var productId = '@Model.ProductId';
+                var sizeId = $('#sizeSelect').val();
+
+                if (!sizeId) {
+                    $('#sizeError').text('Please select a size.').show();
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Orders/CheckInventoryBeforeAddingToCart',
+                    type: 'GET',
+                    data: { productId: productId, sizeId: sizeId },
+                    success: function (response) {
+                        if (response.canAddToCart) {
+                            addToCart(productId, sizeId);
+                            $('#addToCartBtn').prop('disabled', false);
+                        } else {
+                            $('#sizeError').text('Not enough in stock.').show();
+                            $('#addToCartBtn').prop('disabled', true);
+                        }
+                    },
+                    error: function () {
+                        alert('Error checking inventory before adding to cart');
+                    }
+                });
+            });
+
+            function addToCart(productId, sizeId) {
+                $.ajax({
+                    url: '/Orders/AddItemToShoppingCart',
+                    type: 'POST',
+                    data: { id: productId, sizeId: sizeId },
+                    success: function (response) {
+                        window.location.href = '/Orders/ShoppingCart';
+                    },
+                    error: function () {
+                        alert('Error adding product to cart');
+                    }
+                });
+            }
+        });
+    </script>
+}

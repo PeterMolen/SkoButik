@@ -1,0 +1,117 @@
+﻿@using SkoButik.Utility
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SkoButik</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-google" style="font-size: 2rem"></i>
+                    <i class="bi bi-5-square-fill" style="font-size: 2rem"></i></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi bi-gear" style="font-size: 1.5rem"></i> Management
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" asp-controller="Brands" asp-action="Index"><i class="bi bi-signpost-2"></i> Brands</a>
+                                    <a class="dropdown-item" asp-controller="Sizes" asp-action="Index"><i class="bi bi-rulers"></i> Sizes</a>
+                                    <a class="dropdown-item" asp-controller="Inventories" asp-action="Index"><i class="bi bi-house-up"></i> Inventory</a>
+                                    <a class="dropdown-item" asp-controller="Campaigns" asp-action="Index"><i class="bi bi-tag-fill"></i> Campaigns</a>
+                                </div>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index"><i class="bi bi-box-seam" style="font-size: 1.5rem"></i> Shoes</a>
+                        </li>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi bi-lock" style="font-size: 1.5rem"></i> Admin
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" asp-controller="DashBoard" asp-action="Dashboard"><i class="bi bi-clipboard-pulse"></i> DashBoard</a>
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="OrderList"><i class="bi bi-file-text"></i> All orders</a>                                
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="OrderStats"><i class="bi bi-graph-up"></i> Order statistics</a>
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="MostSold"><i class="bi bi-bar-chart"></i> Most sold product</a>
+                                </div>
+                            </li>
+                        }
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Chatbot" asp-action="ask"><i class="bi bi-chat-dots" style="font-size: 1.5rem"></i> AI Q&A</a>
+                        </li>
+
+
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0" asp-controller="Products" asp-action="SearchProduct" style="padding-right: 25px;">
+                        <div class="input-group">
+                            <input name="searchString" type="text" class="form-control" placeholder="Search for a product..." aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-success" type="submit">@* <i class="bi bi-search"> *@<i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <ul class="navbar-nav">
+                        @await Component.InvokeAsync("ShoppingCartSummary")
+                    </ul>
+
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted text-center">
+        <div class="navbar-light bg-white" style="display: flex; justify-content: center; align-items: center;">
+            &copy; 2024 - Grupp5 - <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy"
+            style="color: #000; text-decoration: none;"><i class="bi bi-shield"></i> Privacy Policy</a>
+            -
+            <a class="nav-link text-dark" asp-area="" asp-controller="Contact" asp-action="Contact"
+            style="color: #000; text-decoration: none;"><i class="bi bi-telephone-fill"></i> Contact us</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.dropdown-toggle').on('click', function () {
+                $(this).next('.dropdown-menu').toggleClass('show');
+
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    </body>
+</html>

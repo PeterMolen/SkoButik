@@ -1,0 +1,59 @@
+﻿@model List<SkoButik.Models.Order>
+
+@{
+    ViewData["Title"] = "All orders";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <p>
+            <h4>List of all your orders</h4>
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Order date</th>
+                    <th>First Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr>
+                            <td class="align-middle">@order.OrderId</td>
+                            <td class="align-middle">
+                                @if (order.OrderItems != null && order.OrderItems.Count > 0)
+                                {
+                                    <ul style="list-style-type:none">
+                                        @foreach (var item in order.OrderItems)
+                                        {
+                                            <li>
+                                                <div class="alert alert-info" role="alert">
+                                                    <span class="badge bg-success">@item.Amount</span> [@item.Price.ToString("c")] - @item.Products?.ProductName
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </td>
+                            <td class="align-middle">
+                                @if (order.OrderItems != null && order.OrderItems.Count > 0)
+                                {
+                                    @(order.OrderItems.Sum(m => m.Price * m.Amount).ToString("c"))
+                                }
+                            </td>
+                            <td class="align-middle">@order.OrderDate</td>
+                            <td class="align-middle">@order.ApplicationUser?.FirstName</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

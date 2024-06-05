@@ -1,0 +1,55 @@
+﻿@using SkoButik.Models
+@model OrderListViewModel
+
+@{
+    ViewData["Title"] = "Order List";
+    var currencies = new List<string> { "SEK", "EUR", "USD" };
+    var options = new System.Text.StringBuilder();
+    foreach (var currency in currencies)
+    {
+        var selected = currency == Model.SelectedCurrency ? "selected" : "";
+        options.Append($"<option value='{currency}' {selected}>{currency}</option>");
+    }
+}
+
+<h2>All orders</h2>
+
+<form method="get" asp-action="OrderList" class="form-inline mb-3">
+    <div class="form-group">
+        <label for="currencySelect" class="mr-2">Select Currency:</label>
+        <select id="currencySelect" name="currency" class="form-control" onchange="this.form.submit()">
+            @Html.Raw(options.ToString())
+        </select>
+    </div>
+</form>
+
+<div class="col-12">
+    <div class="card bg-light text-black mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Recent Orders</h5>
+                <table class="table table-light table-striped">
+                    <thead>
+                        <tr>
+                            <th>Order Number</th>
+                            <th>Order Date</th>
+                            <th>Total Price (@Model.SelectedCurrency)</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            var totalPrice = order.OrderItems.Sum(oi => oi.Amount * oi.Price) * Model.ExchangeRate;
+                            <tr>
+                                <td>@order.OrderId</td>
+                                <td>@order.OrderDate.ToShortDateString()</td>
+                                <td>@totalPrice.ToString("F2")</td>
+                            <td><a asp-action="OrderDetails" asp-route-id="@order.OrderId" class="btn btn-primary">Details</a></td>
+                            </tr>
+                        }
+                    </tbody>
+            </table>
+        </div>
+    </div>
+ </div>
+</>
